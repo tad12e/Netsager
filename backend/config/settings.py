@@ -28,7 +28,7 @@ environ.Env.read_env(os.path.join(BASE_DIR.parent, ".env"))
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&a%e()q*tcbqw8qa^8eqwsvrugc*%11a#$b#d&-m32&u^84=2&'
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # Third party packages
     'corsheaders',
+    'rest_framework.authtoken',
 
     # Local apps
     'apps.users.apps.UsersConfig',
@@ -144,5 +145,20 @@ STATIC_URL = 'static/'
 # CORS Configuration for React Frontend
 CORS_ALLOW_ALL_ORIGINS = True
 
+# API auth configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+}
+
 # Custom User Model
 AUTH_USER_MODEL = "users.CustomUser"
+
+# Google sign-in configuration
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID", default="")
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
