@@ -143,3 +143,6 @@ STATIC_URL = 'static/'
 
 # CORS Configuration for React Frontend
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Custom User Model
+AUTH_USER_MODEL = "users.CustomUser"
