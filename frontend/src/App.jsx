@@ -12,6 +12,7 @@ import {
   Bookmark,
   Users
 } from 'lucide-react';
+import AuthPanel from './components/AuthPanel';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -241,6 +242,8 @@ export default function App() {
             ))}
           </div>
         </section>
+
+        <AuthPanel />
 
         {/* Workspace Layout Structure Visualization */}
         <section style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', marginTop: '4rem' }}>
