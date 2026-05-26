@@ -8,6 +8,11 @@ env/
 .env.local
 .env.*.local
 
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
 # Python cache and compiled bytecode
 __pycache__/
 *.py[cod]
