@@ -7,10 +7,10 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.utils.text import slugify
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import CustomUser
 
@@ -22,17 +22,20 @@ def serialize_user(user):
 		'username': user.username,
 		'first_name': user.first_name,
 		'last_name': user.last_name,
-		'avatar': user.avatar.url if user.avatar else None,
+		'avatar': user.avatar.url if getattr(user, 'avatar', None) else None,
 		'is_staff': user.is_staff,
 		'date_joined': user.date_joined.isoformat() if user.date_joined else None,
 	}
 
 
 def build_auth_response(user, http_status=status.HTTP_200_OK):
-	token, _ = Token.objects.get_or_create(user=user)
+	refresh = RefreshToken.for_user(user)
+	access_token = refresh.access_token
 	return Response(
 		{
-			'token': token.key,
+			'token': str(access_token),
+			'access': str(access_token),
+			'refresh': str(refresh),
 			'user': serialize_user(user),
 		},
 		status=http_status,
@@ -161,18 +164,16 @@ class GoogleLoginView(APIView):
 		last_name = (profile.get('family_name') or '').strip()
 		display_name = (profile.get('name') or email.split('@')[0]).strip()
 
-		user, created = CustomUser.objects.get_or_create(
-			email=email,
-			defaults={
-				'username': unique_username(display_name),
-				'first_name': first_name,
-				'last_name': last_name,
-			},
-		)
-
-		if created:
+		user = CustomUser.objects.filter(email=email).first()
+		if user is None:
+			user = CustomUser(
+				email=email,
+				username=unique_username(display_name),
+				first_name=first_name,
+				last_name=last_name,
+			)
 			user.set_unusable_password()
-			user.save(update_fields=['password'])
+			user.save()
 		else:
 			updates = []
 			if first_name and user.first_name != first_name:
@@ -202,6 +203,25 @@ class LogoutView(APIView):
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request):
-		Token.objects.filter(user=request.user).delete()
 		logout(request)
 		return Response({'detail': 'Logged out successfully.'})
+
+
+class HomeView(APIView):
+	permission_classes = [AllowAny]
+
+	def get(self, request):
+		return Response(
+			{
+				'detail': 'Auth API is running.',
+				'endpoints': {
+					'login': '/api/auth/login/',
+					'register': '/api/auth/register/',
+					'signup': '/api/auth/signup/',
+					'google': '/api/auth/google/',
+					'me': '/api/auth/me/',
+					'logout': '/api/auth/logout/',
+				},
+			},
+			status=status.HTTP_200_OK,
+		)

@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 
     # Third party packages
     'corsheaders',
-    'rest_framework.authtoken',
+    'rest_framework',
 
     # Local apps
     'apps.users.apps.UsersConfig',
@@ -148,12 +148,16 @@ CORS_ALLOW_ALL_ORIGINS = True
 # API auth configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 # Custom User Model
