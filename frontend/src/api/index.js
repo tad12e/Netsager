@@ -10,7 +10,7 @@ const API = axios.create({
 
 export const setAuthToken = (token) => {
   if (token) {
-    API.defaults.headers.common.Authorization = `Token ${token}`;
+    API.defaults.headers.common.Authorization = `Bearer ${token}`;
   } else {
     delete API.defaults.headers.common.Authorization;
   }
@@ -21,7 +21,7 @@ export const fetchListings = () => API.get('listings/');
 export const fetchSellers = () => API.get('sellers/');
 export const registerUser = (payload) => API.post('auth/register/', payload);
 export const loginUser = (payload) => API.post('auth/login/', payload);
-export const loginWithGoogle = (payload) => API.post('auth/google/', payload);
+export const loginWithGoogle = (payload) => API.post('auth/google/', payload, { timeout: 25000 });
 export const fetchCurrentUser = () => API.get('auth/me/');
 export const logoutUser = () => API.post('auth/logout/');
 

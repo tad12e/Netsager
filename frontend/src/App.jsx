@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Search, 
   ShieldCheck, 
@@ -13,10 +13,27 @@ import {
   Users
 } from 'lucide-react';
 import AuthPanel from './components/AuthPanel';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 export default function App() {
+  const [route, setRoute] = useState(() => window.location.hash || '#/');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  useEffect(() => {
+    const onHashChange = () => setRoute(window.location.hash || '#/');
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const path = (route || '#/').replace(/^#/, '');
+  if (path.startsWith('/login')) {
+    return <Login />;
+  }
+  if (path.startsWith('/signup')) {
+    return <Signup />;
+  }
 
   const categories = ['All', 'Electronics', 'Phones', 'Laptops', 'Vehicles'];
 
