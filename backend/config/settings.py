@@ -166,3 +166,56 @@ AUTH_USER_MODEL = "users.CustomUser"
 # Google sign-in configuration
 GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID", default="")
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
+
+# Celery configuration
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://localhost:6379/1")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_TASK_TIME_LIMIT = env.int("CELERY_TASK_TIME_LIMIT", default=120)
+CELERY_TASK_SOFT_TIME_LIMIT = env.int("CELERY_TASK_SOFT_TIME_LIMIT", default=110)
+CELERY_RESULT_EXPIRES = env.int("CELERY_RESULT_EXPIRES", default=3600)
+CELERY_TASK_TRACK_STARTED = True
+
+# Django cache (Redis db=2)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": env("DJANGO_CACHE_REDIS_URL", default="redis://localhost:6379/2"),
+        "TIMEOUT": env.int("DJANGO_CACHE_DEFAULT_TIMEOUT", default=3600),
+    }
+}
+
+# Image proxy safety (comma-separated hosts)
+IMAGE_PROXY_ALLOWED_HOSTS = [
+    host.strip()
+    for host in env(
+        "IMAGE_PROXY_ALLOWED_HOSTS",
+        default=(
+            "engocha.com,"
+            "jiji.com.et,"
+            "qefira.com,"
+            "sheger.net,"
+            "ashewa.com,"
+            "addisber.com,"
+            "afrotie.com,"
+            "delala.com,"
+            "shebashopping.com,"
+            "aradamart.net,"
+            "mekina.net,"
+            "megebeya.com,"
+            "addismercato.com,"
+            "brundo.net,"
+            "fetanmart.com,"
+            "hellomarket.com.et,"
+            "asbeza.net,"
+            "deliveraddis.com,"
+            "zmall.com.et,"
+            "deamat.com"
+        ),
+    ).split(",")
+    if host.strip()
+]
